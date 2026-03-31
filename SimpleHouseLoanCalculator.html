@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房贷还款计算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 导航栏 */
+        #nav{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: rgb(191, 237, 172,0.85);
+            padding: 0 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .logo a{
+            font-weight: 700;
+            font-size: 35px;
+            color: rgb(68, 126, 126);
+            padding: 0;
+           
+        }
+
+        .nav-menu{
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul.nav-menu{
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+           
+        }
+
+        ul.nav-menu a{
+            display: block;
+            font-weight: 600;
+            font-size: 20px;
+            color: rgba(90, 139, 154, 0.586);
+            text-align: center;
+            padding: 12px 15px;
+            min-width: auto;
+            text-decoration: none;
+            text-transform: uppercase;
+          
+        }
+
+        ul.nav-menu a:hover,
+        ul.nav-menu a:active{
+            background-color: rgb(147, 182, 132);
+        }
+
+        /* 折叠菜单 */
+        .foldMenu{
+            display: none;
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: rgb(147, 182, 132);
+            cursor: pointer;
+            padding: 10px;
+            font-size: 24px;
+        }
+
+        /* 计算输入框 */
+        .textEare{
+            display: flex;
+            width:90%;
+            margin: 10px auto;
+            background-color: rgb(246, 250, 249);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            gap: 40px;
+        }
+
+        /* 分栏布局 */
+        .inputBox,
+        .outputBox{
+            flex: 1;
+            padding: 20px;
+            width: 50%;
+        }
+
+   
+
+        .outputBox{
+            float: right;
+            width: 50%;
+            background-color: rgb(242, 244, 240);          
+            border-radius: 5px;
+            box-shadow:0 2px 2px rgba(152, 197, 197, 0.5);
+        } 
+
+        .inputRow{
+            padding:8px 0 ;
+        }
+
+        .row:after{
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .inputRow input,select{
+            background-color: rgb(255, 255, 255);
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgb(221, 221, 221);
+            border-radius: 2px;
+            font-size: 16px;
+            box-sizing: border-box;
+            height: 40px;
+        }
+
+        .inputRow select option{
+            padding: 8px 12px;
+            font-size: 16px;
+        }
+
+        .inputBox a{
+            font-size: 20px;
+
+        }
+
+          .calculateBtn{
+                display: flex;
+                background-color: rgb(76, 175, 80);
+                color: white;
+                border: none;
+                width: 100%;
+                
+                padding: 10px 20px;
+                font-size: 18px;
+                justify-content: center;
+                align-items: center;
+                border-radius: 5px;
+
+
+            }
+          
+
+            /* 输出结果区 */
+              
+            .result-title{
+                font-size: 28px;
+                font-weight: 600;
+                color: rgb(18, 99, 41);
+                margin-bottom: 25px;
+                text-align: center;
+                
+            }
+
+            .result-details {
+            margin-top: 20px;
+            }
+
+            .result-item{
+                display: flex;
+                justify-content: space-between;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(75, 50, 50, 0.14);
+                font-size: 16px;
+            }
+
+            .result-item-label{
+                color: rgb(79, 79, 79);
+                font-weight: 400;
+            }
+
+            .result-item-value{
+                font-weight: 600;
+            }
+
+        /* 小屏幕响应式 */
+        @media(max-width:768px){
+
+            #nav{
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-header{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+
+             .foldMenu{
+                display: block;
+                margin-left: 0;
+            }
+
+            ul.nav-menu{
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                order: 2;
+            }
+
+           
+
+            ul.nav-menu.active{
+                display: flex;
+            }
+
+            .inputBox,
+            .outputBox{
+                width: 100%;
+            }
+
+            .textEare{
+                flex-direction: column;
+                padding: 10px;
+            }
+
+          
+          
+            
+         
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav id="nav">
+    <div class="nav-header">
+    <div class="logo">
+        <a href="#">房贷还款计算器</a>
+    </div>
+    <button class="foldMenu">☰</button>
+    </div>
+    <!-- 菜单 -->
+    <div id="nav-menu">
+        <ul class="nav-menu">
+           
+            <li><a href="#">2026房贷计算器</a></li>
+            <li><a href="#">提前还贷计算器</a></li>
+            <li><a href="#">购房能力评估计算器</a></li>
+        </ul>
+        <!-- 折叠菜单事件 -->
+        <script>
+            const foldMenu = document.querySelector('.foldMenu');
+            const navMenu = document.querySelector('.nav-menu');
+            foldMenu.addEventListener('click',() => {
+                navMenu.classList.toggle('active');
+            });
+        </script>
+    </div>
+    </nav>
+
+
+
+    <!-- 2026房贷计算器 -->
+    <div class="textEare row">
+        
+            <div class="column inputBox">
+                
+                <a>还款方式&emsp;</a>
+                <br>
+                    <label><input type="radio" name="repayFun" value="sameAcc" checked>等额本息</label>
+                    <label><input type="radio" name="repayFun" value="samePri">等额本金</label>
+                <br>
+                <a>贷款类型&emsp;</a>
+                <br>
+                    <label><input type="radio" name="loanFun" value="gjjLoan" checked>公积金贷</label>
+                    <label><input type="radio" name="loanFun" value="busLoan">商业贷款</label>
+                    <label><input type="radio" name="loanFun" value="comLoan">组合贷</label>
+                <br>
+                <a>计算方式&emsp;</a>
+                <br>
+                    <label><input type="radio" name="calFun" value="allLoan" checked>根据贷款总额</label>
+                    <label><input type="radio" name="calFun" value="notLoan">根据按揭比例 </label>
+                <!-- 输入参数区域 -->
+                    <!-- 贷款总额 -->
+                    <div class="inputRow">
+                        <label for="sumLoan">贷款总额（万元）</label>
+                        <input type="number" id="sumLoan" value="" min="0">                       
+                    </div>
+                     <!-- 贷款年限的select框 -->
+                    <div class="inputRow">                  
+                        <label for="year">贷款年限</label>
+                        <br>
+                        <select name="year" id="year">
+                            <option value="1">1年（12期）</option>
+                            <option value="2">2年（24期）</option>
+                            <option value="3">3年（36期）</option>
+                            <option value="4">4年（48期）</option>
+                            <option value="5">5年（60期）</option>
+                            <option value="6">6年（72期）</option>
+                            <option value="7">7年（84期）</option>
+                            <option value="8">8年（96期）</option>
+                            <option value="9">9年（108期）</option>
+                            <option value="10">10年（120期）</option>
+                            <option value="11">11年（132期）</option>
+                            <option value="12">12年（144期）</option>
+                            <option value="13">13年（156期）</option>
+                            <option value="14">14年（168期）</option>
+                            <option value="15">15年（180期）</option>
+                            <option value="16">16年（192期）</option>
+                            <option value="17">17年（204期）</option>
+                            <option value="18">18年（216期）</option>
+                            <option value="19">19年（228期）</option>
+                            <option value="20">20年（240期）</option>
+                            <option value="21">21年（252期）</option>
+                            <option value="22">22年（264期）</option>
+                            <option value="23">23年（276期）</option>
+                            <option value="24">24年（288期）</option>
+                            <option value="25">25年（300期）</option>
+                            <option value="26">26年（312期）</option>
+                            <option value="27">27年（324期）</option>
+                            <option value="28">28年（336期）</option>
+                            <option value="29">29年（348期）</option>
+                            <option value="30">30年（360期）</option>
+                        </select>                       
+                    </div>
+                    <!-- 利率输入框 -->
+                    <div class="inputRow" style="width: 50%;">
+                        <label for="rate">利率（单位：%）</label>
+                        <label><input type="number" id="rate" value="" min="0"></label>
+                    </div>
+                        <label><input type="radio" name="rateFun" value="priRate" >基准利率</label>
+                        <label><input type="radio" name="rateFun" value="secondRate">第二套房利率</label>
+                        <label><input type="radio" name="rateFun" value="inputRate">手动输入</label>
+                        <br>
+                        <button class="calculateBtn" id="calculateBtn">开始计算</button>           
+            </div>
+
+            <!-- 输出框 -->
+          
+                    <div class="outputBox">
+                    <div class="result-box">
+                        <div class="result-title">计算结果</div>
+ 
+                        <div class="result-details">
+                        <div class="result-item">
+                            <span class="result-item-label">月均还款（元）</span>
+                            <span class="result-item-value" id="monPay"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">贷款总额</span>
+                            <span class="result-item-value" id="totalLoan"> 元</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">贷款期限</span>
+                            <span class="result-item-value" id="loanDdl"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">年利率</span>
+                            <span class="result-item-value" id="yearRate"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">还款方式</span>
+                            <span class="result-item-value" id="repayFun"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">支付利息总额</span>
+                            <span class="result-item-value" id="totalAcc"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-item-label">还款总额</span>
+                            <span class="result-item-value" id="totalPay"></span>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+    // 输入元素
+    const sumLoanInput = document.getElementById('sumLoan');
+    const yearSelect = document.getElementById('year');
+    const rateInput = document.getElementById('rate');
+    const calculateBtn = document.getElementById('calculateBtn');
+
+    // 输出元素
+    const monPaySpan = document.getElementById('monPay');
+    const totalLoanSpan = document.getElementById('totalLoan');
+    const loanDdlSpan = document.getElementById('loanDdl');
+    const yearRateSpan = document.getElementById('yearRate');
+    const repayFunSpan = document.getElementById('repayFun');
+    const totalAccSpan = document.getElementById('totalAcc');
+    const totalPaySpan = document.getElementById('totalPay');
+
+    // 单选按钮组
+    const repayRadios = document.querySelectorAll('input[name="repayFun"]');
+    const loanTypeRadios = document.querySelectorAll('input[name="loanFun"]');
+    const calTypeRadios = document.querySelectorAll('input[name="calFun"]');
+    const rateTypeRadios = document.querySelectorAll('input[name="rateFun"]');
+
+    // 利率常量
+    const RATES = {
+        gjjBase: 3.25,
+        busBase: 4.9,
+        secondRateBase: 1.1
+    };
+
+    // 还款方式获取
+    function getRepayFun() {
+        for (let radio of repayRadios) {
+            if (radio.checked) {
+                return radio.value;
+            }
+        }
+        return 'sameAcc';
+    }
+
+    // 贷款类型获取
+    function getLoanFun() {
+        for (let radio of loanTypeRadios) {
+            if (radio.checked)
+                return radio.value;
+        }
+        return 'gjjLoan';
+    }
+
+    // 计算方式获取
+    function getCalFun() {
+        for (let radio of calTypeRadios) {
+            if (radio.checked)
+                return radio.value;
+        }
+        return 'allLoan';
+    }
+
+    // 利率方式获取
+    function getRateFun() {
+        for (let radio of rateTypeRadios) {
+            if (radio.checked)
+                return radio.value;
+        }
+        return 'priRate';
+    }
+
+    // 年利率计算
+    function getYearRate() {
+        const loanType = getLoanFun();
+        const rateType = getRateFun();
+        let baseRate = null;
+        
+        // 确定基础利率
+        if (loanType === 'gjjLoan') {
+            baseRate = RATES.gjjBase;
+        } else if (loanType === 'busLoan') {
+            baseRate = RATES.busBase;
+        } else if (loanType === 'comLoan') {
+            // 组合贷通常取商业贷款利率，这里简化为商业贷利率
+            baseRate = RATES.busBase;
+        }
+
+        // 利率选择（基准利率、二套房）
+        if (rateType === 'priRate') {
+            return baseRate;
+        } else if (rateType === 'secondRate') {
+            return baseRate * RATES.secondRateBase;
+        } else if (rateType === 'inputRate') {
+            let manualRate = parseFloat(rateInput.value);
+            return isNaN(manualRate) ? baseRate : manualRate;
+        }
+        
+        return baseRate;
+    }
+
+    // 将利率自动填充到利率输入框中
+    function updateRateInput() {
+        const yearRate = getYearRate();
+        if (!isNaN(yearRate) && yearRate > 0) {
+            rateInput.value = yearRate.toFixed(2);
+        }
+    }
+
+    // 监听利率选择按钮变化，自动更新
+    rateTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (radio.checked) {
+                updateRateInput();
+            }
+        });
+    });
+    
+    // 监听贷款类型（基准还是二套）
+    loanTypeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            updateRateInput();
+        });
+    });
+
+    // 手动修改利率输入框
+    rateInput.addEventListener('input', () => {
+        if (rateInput.value.trim() !== '') {
+            // 选中手动输入选项
+            document.querySelector('input[name="rateFun"][value="inputRate"]').checked = true;
+        }
+    });
+
+    // 主计算函数
+    function calculate() {
+        // 获取输入值
+        let wanLoan = parseFloat(sumLoanInput.value);
+        if (isNaN(wanLoan) || wanLoan <= 0) {
+            alert('请输入有效的贷款总额');
+            return;
+        }
+        const loanAmount = wanLoan * 10000;
+
+        let years = parseFloat(yearSelect.value);
+        const months = years * 12;
+
+        let yearRate = getYearRate();
+        if (isNaN(yearRate) || yearRate <= 0) {
+            alert('请设置正确的利率');
+            return;
+        }
+        const monthRate = yearRate / 100 / 12;
+
+        const repayFun = getRepayFun();
+
+        let monthPay = 0;
+        let totalInterest = 0;
+        let totalPay = 0;
+
+        if (repayFun === 'sameAcc') {
+            // 等额本息计算
+            if (monthRate === 0) {
+                monthPay = loanAmount / months;
+            } else {
+                const factor = Math.pow(1 + monthRate, months);
+                monthPay = loanAmount * monthRate * factor / (factor - 1);
+            }
+            totalPay = monthPay * months;
+            totalInterest = totalPay - loanAmount;
+        } else {
+            // 等额本金计算
+            let monthlyPrincipal = loanAmount / months; // 每月本金
+            let remainingPrincipal = loanAmount; // 剩余本金
+            let firstMonthPayment = 0; // 首月还款
+            let sumPayments = 0; // 总还款额
+            
+            for (let i = 1; i <= months; i++) {
+                let interestPart = remainingPrincipal * monthRate;
+                let monthPayment = monthlyPrincipal + interestPart;
+                
+                if (i === 1) {
+                    firstMonthPayment = monthPayment;
+                }
+                
+                sumPayments += monthPayment;
+                remainingPrincipal -= monthlyPrincipal;
+            }
+            
+            monthPay = firstMonthPayment; // 展示首月还款
+            totalPay = sumPayments;
+            totalInterest = totalPay - loanAmount;
+        }
+
+        // 格式化金额（保留两位小数）
+        const formatMoney = (val) => val.toLocaleString(undefined, { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+
+        // 更新界面
+        monPaySpan.textContent = formatMoney(monthPay);
+        totalLoanSpan.textContent = formatMoney(loanAmount) + ' 元';
+        loanDdlSpan.textContent = `${years}年（${months}期）`;
+        yearRateSpan.textContent = yearRate.toFixed(2) + '%';
+        repayFunSpan.textContent = repayFun === 'sameAcc' ? '等额本息' : '等额本金';
+        totalAccSpan.textContent = formatMoney(totalInterest) + ' 元';
+        totalPaySpan.textContent = formatMoney(totalPay) + ' 元';
+    }
+
+    // 初始化页面
+    function initialize() {
+        // 设置默认值
+        if (sumLoanInput.value === '') {
+            sumLoanInput.value = '100';
+        }
+        
+        if (rateInput.value === '') {
+            rateInput.value = RATES.busBase.toFixed(2);
+        }
+        
+        // 设置默认选中
+        document.querySelector('input[name="loanFun"][value="busLoan"]').checked = true;
+        document.querySelector('input[name="repayFun"][value="sameAcc"]').checked = true;
+        document.querySelector('input[name="calFun"][value="allLoan"]').checked = true;
+        document.querySelector('input[name="rateFun"][value="priRate"]').checked = true;
+        
+        // 触发一次计算
+        calculate();
+    }
+
+    calculateBtn.addEventListener('click', calculate);
+    
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', initialize);
+</script>
+</body>
+</html>
