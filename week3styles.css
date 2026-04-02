@@ -96,6 +96,26 @@
             box-shadow:0 2px 2px rgba(152, 197, 197, 0.5);
         } 
 
+        .hidden{
+            display: none;
+        }
+
+        .hidBox{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .hidBox img{
+            display: block;
+            width: 100px;
+        }
+
+        .hidBox p{
+            font-size: 18px;
+        }
+
         .inputRow{
             padding:8px 0 ;
         }
@@ -145,6 +165,7 @@
           
 
             /* 输出结果区 */
+    
               
             .result-title{
                 font-size: 28px;
